@@ -1,8 +1,8 @@
 <template>
-  <div id="app">
-      <input id="channel" type="text" v-model="input">
-      <button @click="_joinRoom()">Join</button>
-      <button @click="_createRoom()">Creer un salon</button>
+  <div id="selection">
+      <button @click="_joinRoomA()">Team A</button>
+      <button @click="joinRoomB()">Team B</button>
+      <button @click="joinRoomSpectator()">Spectateur</button>
   </div>
 </template>
 
@@ -10,16 +10,25 @@
   import io from 'socket.io-client';
 
   export default {
-    name: 'select',
+    name: 'selection',
     data() {
       return {
         socket : io('localhost:3001')
       }
     },
     methods: {
-      _joinRoom(){
-      this.socket.emit("joinroom", "oui")
-    }
+        _joinRoomA(){
+            this.socket.emit("joinroomA",this.$route.params.id);
+            this.$router.push('/'+this.$route.params.id+'/TeamA');
+    },
+        joinRoomB(){
+            this.socket.emit("joinroomB",this.$route.params.id);
+            this.$router.push('/'+this.$route.params.id+'/TeamA');
+        },
+        joinRoomSpectator(){
+            this.socket.emit("joinroomSpectator",this.$route.params.id);
+            this.$router.push('/'+this.$route.params.id+'/TeamA');
+        }
       },
     mounted() {
 

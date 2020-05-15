@@ -3,7 +3,7 @@
     <input id="channel" type="text" v-model="input" />
     <button @click="_joinRoom()">Join</button>
     <button @click="_createRoom()">
-      <router-link :to="{ path: this.id }">Creer un salon</router-link>
+      créer un Salon
     </button>
   </div>
 </template>
@@ -28,13 +28,13 @@ export default {
     _createRoom() {
       var randomize = Math.floor(Math.random() * 1000 + 1);
       this.socket.emit("createroom", randomize);
+      this.$router.push('/'+randomize);
     },
   },
   mounted() {
-    this.socket.on("id", (data) => {
-      this.id = data.toString(8);
-      console.log(this.id);
-    });
+    this.socket.on('room',(data)=>{
+      this.$router.push('/'+data);
+    })
   },
 };
 </script>
