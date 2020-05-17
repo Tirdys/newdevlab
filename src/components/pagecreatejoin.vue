@@ -2,6 +2,7 @@
   <div id="app">
     <input id="channel" type="text" v-model="input" />
     <button @click="_joinRoom()">Join</button>
+      <p>{{errormes}}</p>
     <button @click="_createRoom()">
       créer un Salon
     </button>
@@ -15,6 +16,7 @@ export default {
   name: "cj",
   data() {
     return {
+        errormes:'',
       id: "",
       input: "",
       socket: io("localhost:3001"),
@@ -34,7 +36,10 @@ export default {
   mounted() {
     this.socket.on('room',(data)=>{
       this.$router.push('/'+data);
-    })
+    }),
+      this.socket.on('message',(data)=>{
+          this.errormes = data.mes;
+      })
   },
 };
 </script>

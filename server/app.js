@@ -30,6 +30,32 @@ io.on("connection", function(socket) {
     joinRoomSpectator(socket, data);
     console.log(data);
   });
+    socket.on('pickid', function(data) {
+      socket.emit('pid', data);
+        socket.broadcast.emit('pid', data)
+    });
+    socket.on('banid', function(data) {
+      socket.emit('bid', data);
+        socket.broadcast.emit('bid', data)
+    });
+    socket.on('changeplayer', function(data) {
+      socket.emit('player', data);
+        socket.broadcast.emit('player', data)
+    });
+    socket.on('nbturn', function(data) {
+      socket.emit('turn', data);
+        socket.broadcast.emit('turn', data)
+    });
+    socket.on('timer', function(data) {
+      socket.emit('time', data);
+      socket.broadcast.emit('time', data)
+    });
+  socket.on('readyB', function(data) {
+    socket.broadcast.emit('readB', data)
+  });
+  socket.on('readyA', function(data) {
+    socket.broadcast.emit('readA', data)
+  });
 });
 
 function _createRoom(socket, data) {
@@ -51,7 +77,7 @@ function _joinRoom(socket, data) {
       socket.join(data);
       socket.emit('room',data);
     } else {
-      socket.emit("error", "erreur lors de la requête");
+      socket.emit("message",{mes:"il n'y a pas de room avec cette id"});
     }
   }
 }

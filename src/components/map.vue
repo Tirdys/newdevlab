@@ -20,7 +20,7 @@
 
 <script>
     export default {
-        name: "map",
+        name: "Carte",
         props: {
             choice:String
         }

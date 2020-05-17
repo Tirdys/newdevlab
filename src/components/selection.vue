@@ -23,11 +23,11 @@
     },
         joinRoomB(){
             this.socket.emit("joinroomB",this.$route.params.id);
-            this.$router.push('/'+this.$route.params.id+'/TeamA');
+            this.$router.push('/'+this.$route.params.id+'/TeamB');
         },
         joinRoomSpectator(){
             this.socket.emit("joinroomSpectator",this.$route.params.id);
-            this.$router.push('/'+this.$route.params.id+'/TeamA');
+            this.$router.push('/'+this.$route.params.id+'/Spectator');
         }
       },
     mounted() {
