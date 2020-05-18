@@ -3,11 +3,29 @@
         <div class="container" style="margin-top: 20px;">
             <p>time: {{time}}</p>
             <p>turn : {{nbturn}}</p>
-            <div class="text-center">
-                <div v-if="player == 0"><h2>Joueur 1</h2></div>
-                <div v-if="player == 1"><h2>Joueur 2</h2></div>
-                <div v-if="porb == false"><h2>pick</h2></div>
-                <div v-if="porb == true"><h2>ban</h2></div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="row"  >
+                        <div class="col-3" v-for="item in picksA" v-bind:key="item.id">
+                            <Carte :id="item.id" choice="pick"></Carte>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4" style="border-color: black">
+                    <div class="text-center">
+                        <div v-if="player == 0"><h2>Joueur 1</h2></div>
+                        <div v-if="player == 1"><h2>Joueur 2</h2></div>
+                        <div v-if="porb == false"><h2>pick</h2></div>
+                        <div v-if="porb == true"><h2>ban</h2></div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="row"  >
+                        <div class="col-3" v-for="item in picksB" v-bind:key="item.id">
+                            <Carte :id="item.id" choice="pick"></Carte>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="row" >
                 <div class="col-lg-4" v-for="item in maps" v-bind:key="item.id">
@@ -47,6 +65,7 @@
         },
         data() {
             return {
+                mode:'',
                 maps:[
                     {id:1,img:'',name:''},
                     {id:2,img:'',name:''},
@@ -71,7 +90,7 @@
         methods: {
             start () {
                 this.readyB=true;
-                this.socket.emit('readyB',{ready: this.readyB});
+                this.socket.emit('readyB',{ready: this.readyB,id: this.$route.params.id});
                 if(this.readyB== true && this.readyA== true){
                     this.timer = setInterval( () => {
                         if (this.time > 0) {
@@ -79,97 +98,105 @@
                         } else {
                             this.time=30;
                             this.nbturn++;
-                            this.socket.emit('nbturn',{nbturn:this.nbturn});
-                            console.log(this.nbturn);
+                            this.socket.emit('nbturn',{nbturn:this.nbturn,id: this.$route.params.id});
                             if(this.player == 0 ){
                                 this.player ++;
-                                this.socket.emit('changeplayer',{player:this.player})
+                                this.socket.emit('changeplayer',{player:this.player,id: this.$route.params.id})
                             }else{
                                 this.player--;
-                                this.socket.emit('changeplayer',{player:this.player})
+                                this.socket.emit('changeplayer',{player:this.player,id: this.$route.params.id})
                             }
-                            if(this.nbturn == 5){
+                            if(this.nbturn ==11){
                                 this.porb=true
-                            }else if(this.nbturn == 11){
+                            }else if(this.nbturn == 17){
                                 this.time=0;
                                 clearInterval(this.timer);
                             }
                         }
-                        this.socket.emit('timer',{time:this.time});
+                        this.socket.emit('timer',{time:this.time,id: this.$route.params.id});
                     }, 1000 )
                 }
             },
             putinselection(id){
-                console.log('click');
                 this.selection= id
             },
             putinlist () {
-                console.log('click');
                 if(this.porb==false && this.selection!== null && this.picks.includes(this.selection) == false){
-                    this.socket.emit('pickid',{id:this.selection});
+                    this.socket.emit('pickid',{id:this.selection,idr: this.$route.params.id,player:this.player});
                     this.selection = null;
                     this.time=30;
                     this.nbturn++;
-                    this.socket.emit('nbturn',{nbturn:this.nbturn});
+                    this.socket.emit('nbturn',{nbturn:this.nbturn,id: this.$route.params.id});
                     if(this.player == 0 ){
                         this.player ++;
-                        this.socket.emit('changeplayer',{player:this.player})
+                        this.socket.emit('changeplayer',{player:this.player,id: this.$route.params.id})
                     }else{
                         this.player--;
-                        this.socket.emit('changeplayer',{player:this.player})
+                        this.socket.emit('changeplayer',{player:this.player,id: this.$route.params.id})
                     }
 
                 }else if(this.porb==true && this.selection!== null && this.bans.includes(this.selection) == false){
-                    this.socket.emit('banid',{id:this.selection});
+                    this.socket.emit('banid',{id:this.selection,idr: this.$route.params.id,player:this.player});
                     this.selection = null;
                     this.time=30;
                     this.nbturn++;
-                    this.socket.emit('nbturn',{nbturn:this.nbturn});
+                    this.socket.emit('nbturn',{nbturn:this.nbturn,id: this.$route.params.id});
                     if(this.player == 0 ){
                         this.player ++;
-                        this.socket.emit('changeplayer',{player:this.player})
+                        this.socket.emit('changeplayer',{player:this.player,id: this.$route.params.id})
                     }else{
                         this.player--;
-                        this.socket.emit('changeplayer',{player:this.player})
+                        this.socket.emit('changeplayer',{player:this.player,id: this.$route.params.id})
                     }
                 }
             }
         },
         mounted() {
-            this.socket.on('pid', (data) => {
-                this.picks.push(data.id);
-                if(this.player==0){
-                    this.picksA.push(data.id)
-                }
-                else if(this.player==0){
-                    this.picksB.push(data.id)
-                }
-
-            });
-            this.socket.on('bid', (data) => {
-                this.bans.push(data.id);
-                if(this.player==0){
-                    this.bansA.push(data.id)
-                }
-                else if(this.player==0){
-                    this.bansB.push(data.id)
-                }
-            });
             this.socket.on('player', (data) => {
-                this.player=data.player
+                if(data.id == this.$route.params.id ) {
+                    this.player = data.player
+
+                }
             });
             this.socket.on('turn', (data) => {
-                this.nbturn=data.nbturn;
+                if(data.id == this.$route.params.id ) {
+                    this.nbturn = data.nbturn;
+                }
             });
             this.socket.on('time', (data) => {
-                this.time=data.time;
+                if(data.id == this.$route.params.id ){
+                    this.time=data.time;
+                }
+            });
+            this.socket.on('pid', (data) => {
+                if(data.idr == this.$route.params.id ) {
+                    this.picks.push(data.id);
+                    let map = this.maps.find(element=>element.id == data.id);
+                    console.log(data.player)
+                    if (data.player == 0) {
+                        this.picksA.push(map);
+                    } else if (data.player == 1) {
+                        this.picksB.push(map);
+                    }
+                }
+            });
+            this.socket.on('bid', (data) => {
+                if(data.idr == this.$route.params.id ) {
+                    this.bans.push(data.id);
+                    if(data.player==0){
+                        this.bansA.push(data.id)
+                    }
+                    else if(data.player==1){
+                        this.bansB.push(data.id)
+                    }
+                }
             });
             this.socket.on('readA', (data) => {
-                this.readyA=data.ready;
+                if(data.id == this.$route.params.id ){
+                    this.readyA=data.ready;
+                }
             });
         }
-
-
     }
 </script>
 

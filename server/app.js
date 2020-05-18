@@ -3,32 +3,20 @@ var server = require("http").createServer(app);
 var io = require("socket.io").listen(server);
 
 let joins = [];
-
 server.listen(3001, function() {
   console.log("server is running on port 3001");
 });
 
 io.on("connection", function(socket) {
   console.log(socket.id);
+  socket.on('name', (data)=>{
+    socket.pseudo= data
+  });
   socket.on("joinroom", (data) => {
     _joinRoom(socket, data);
-    console.log(data);
   });
   socket.on("createroom", (data) => {
     _createRoom(socket, data);
-    console.log(data);
-  });
-  socket.on("joinroomA", (data) => {
-    joinRoomTeamA(socket, data);
-    console.log(data);
-  });
-  socket.on("joinroomB", (data) => {
-    joinRoomTeamB(socket, data);
-    console.log(data);
-  });
-  socket.on("joinroomSpectator", (data) => {
-    joinRoomSpectator(socket, data);
-    console.log(data);
   });
     socket.on('pickid', function(data) {
       socket.emit('pid', data);
@@ -39,16 +27,14 @@ io.on("connection", function(socket) {
         socket.broadcast.emit('bid', data)
     });
     socket.on('changeplayer', function(data) {
-      socket.emit('player', data);
         socket.broadcast.emit('player', data)
     });
     socket.on('nbturn', function(data) {
-      socket.emit('turn', data);
-        socket.broadcast.emit('turn', data)
+      socket.broadcast.emit('turn', data)
     });
     socket.on('timer', function(data) {
       socket.emit('time', data);
-      socket.broadcast.emit('time', data)
+      socket.broadcast.emit('time',data)
     });
   socket.on('readyB', function(data) {
     socket.broadcast.emit('readB', data)
@@ -64,12 +50,12 @@ function _createRoom(socket, data) {
     admin: socket.id,
     users: [socket.id],
   };
-
   joins.push(obj);
   socket.join(data);
   socket.emit("id", data);
   console.log(joins);
 }
+
 function _joinRoom(socket, data) {
    let listlenght = joins.length;
   for(let i = 0; i < listlenght; i++) {
@@ -80,13 +66,4 @@ function _joinRoom(socket, data) {
       socket.emit("message",{mes:"il n'y a pas de room avec cette id"});
     }
   }
-}
-function joinRoomTeamA(socket, data) {
-  socket.join(data+"TeamA");
-}
-function joinRoomTeamB(socket, data) {
-  socket.join(data+"TeamB");
-}
-function joinRoomSpectator(socket, data) {
-  socket.join(data+"Spectator");
 }

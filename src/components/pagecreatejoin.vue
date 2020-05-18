@@ -16,6 +16,7 @@ export default {
   name: "cj",
   data() {
     return {
+      mode:'',
         errormes:'',
       id: "",
       input: "",
@@ -29,7 +30,8 @@ export default {
 
     _createRoom() {
       var randomize = Math.floor(Math.random() * 1000 + 1);
-      this.socket.emit("createroom", randomize);
+      randomize = randomize.toString(8);
+      this.socket.emit("createroom",randomize);
       this.$router.push('/'+randomize);
     },
   },

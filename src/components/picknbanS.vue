@@ -3,12 +3,25 @@
         <div class="container" style="margin-top: 20px;">
             <p>time: {{time}}</p>
             <p>turn : {{nbturn}}</p>
-            <div class="text-center">
-                <h1>Spectateur</h1>
-                <div v-if="player == 0"><h2>Tour Joueur 1</h2></div>
-                <div v-if="player == 1"><h2>TourJoueur 2</h2></div>
-                <div v-if="porb == false"><h2>pick</h2></div>
-                <div v-if="porb == true"><h2>ban</h2></div>
+            <div class="row">
+                <div class="col-4" style="border-color: black">
+                    <div class="row" v-for="item in picksA" v-bind:key="item">
+                        <carte :id="item.id" choice="picks"></carte>
+                    </div>
+                </div>
+                <div class="col-4" style="border-color: black">
+                    <div class="text-center">
+                        <div v-if="player == 0"><h2>Joueur 1</h2></div>
+                        <div v-if="player == 1"><h2>Joueur 2</h2></div>
+                        <div v-if="porb == true"><h2>pick</h2></div>
+                        <div v-if="porb == false"><h2>ban</h2></div>
+                    </div>
+                </div>
+                <div class="col-4" style="border-color: black">
+                    <div class="row" v-for="item in picksA" v-bind:key="item">
+                        <carte :id="item.id" choice="picks"></carte>
+                    </div>
+                </div>
             </div>
             <div class="row" >
                 <div class="col-lg-4" v-for="item in maps" v-bind:key="item.id">
@@ -71,7 +84,6 @@
                 else if(this.player==0){
                     this.picksB.push(data.id)
                 }
-
             });
             this.socket.on('bid', (data) => {
                 this.bans.push(data.id);
